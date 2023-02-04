@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { useState, useEffect } from 'react';
 
 import { fetchApi } from 'assets/fetchApi';
 
@@ -6,67 +6,60 @@ import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import Button from './Button/Button';
 import Loader from './Loader/Loader';
-export class App extends Component {
-  state = {
-    images: [],
-    query: null,
-    status: 'idle',
-    error: null,
-    dataLength: null,
-    page: 1,
-  };
+export const App = () => {
+  const [query, setQuery] = useState('');
+  const [page, setPage] = useState(1);
+  const [status, setStatus] = useState('idle');
+  const [images, setImages] = useState([]);
+  const [dataLength, setDataLength] = useState(null);
 
-  componentDidUpdate(prevProps, prevState) {
-    if (prevState.query !== this.state.query) {
-      this.setState({ status: 'pending' });
-      this.state.query === ''
-        ? this.setState({ images: [], status: 'resolved', dataLength: null })
-        : fetchApi(this.state.query, this.state.page).then(data => {
-            this.setState({
-              images: [...data.hits],
-              status: 'resolved',
-              dataLength: data.totalHits,
-            });
-          });
-    } else if (prevState.page !== this.state.page) {
-      this.setState({ status: 'pending' });
+  useEffect(() => {
+    setStatus('pending');
 
-      this.state.query === ''
-        ? this.setState({ images: [], status: 'resolved' })
-        : fetchApi(this.state.query, this.state.page).then(data => {
-            this.setState({
-              images: [...this.state.images, ...data.hits],
-              status: 'resolved',
-              dataLength: data.totalHits,
-            });
-          });
+    if (page !== 1) {
+      return;
+    } else if (query === '') {
+      setStatus('resolved');
+      setImages([]);
+      setDataLength(null);
+
+      return;
     }
-  }
-
-  onSubmitHandler = data => {
-    this.setState({
-      query: data,
-      page: 1,
+    fetchApi(query, page).then(data => {
+      setImages(data.hits);
+      setStatus('resolved');
+      setDataLength(data.totalHits);
     });
+  }, [query, page]);
+
+  useEffect(() => {
+    if (page === 1) {
+      return;
+    }
+    setStatus('pending');
+    fetchApi(query, page).then(data => {
+      setImages([...images, ...data.hits]);
+      setStatus('resolved');
+      setDataLength(data.totalHits);
+    });
+  }, [page]);
+
+  const onSubmitHandler = data => {
+    setQuery(data);
+    setPage(1);
   };
 
-  onLoadMore = () => {
-    this.setState(prevState => ({
-      status: 'pending',
-      page: prevState.page + 1,
-    }));
+  const onLoadMore = () => {
+    setStatus('pending');
+    setPage(prevState => prevState + 1);
   };
 
-  render() {
-    return (
-      <div>
-        <Searchbar onSubmit={this.onSubmitHandler}></Searchbar>
-        {this.state.status === 'pending' && <Loader></Loader>}
-        <ImageGallery images={this.state.images}></ImageGallery>
-        {this.state.images && this.state.dataLength >= 12 && (
-          <Button onClick={this.onLoadMore} />
-        )}
-      </div>
-    );
-  }
-}
+  return (
+    <div>
+      <Searchbar onSubmit={onSubmitHandler}></Searchbar>
+      {status === 'pending' && <Loader></Loader>}
+      <ImageGallery images={images}></ImageGallery>
+      {images && dataLength >= 12 && <Button onClick={onLoadMore} />}
+    </div>
+  );
+};

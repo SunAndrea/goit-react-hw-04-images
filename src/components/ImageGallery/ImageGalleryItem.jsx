@@ -1,29 +1,28 @@
 import { Component } from 'react';
 import PropTypes from 'prop-types';
-
+import { useState } from 'react';
 import Modal from 'components/Modal/Modal';
-class ImageGalleryItem extends Component {
-  state = {
-    largeImgShow: false,
+const ImageGalleryItem = ({ img, tags, largeImg }) => {
+  const [largeImgShow, setLargeImgShow] = useState(false);
+
+  const onItemClick = () => {
+    setLargeImgShow(!largeImgShow);
   };
 
-  onItemClick = () => {
-    this.setState(({ largeImgShow }) => ({ largeImgShow: !largeImgShow }));
-  };
-
-  render() {
-    const { img, tags, largeImg } = this.props;
-
-    return (
-      <li onClick={this.onItemClick} className="ImageGalleryItem-image">
-        <img src={img} alt={tags} />
-        {this.state.largeImgShow && (
-          <Modal largeImg={largeImg} tags={tags} onClose={this.onItemClick} />
-        )}
-      </li>
-    );
-  }
-}
+  return (
+    <li onClick={onItemClick} className="ImageGalleryItem-image">
+      <img src={img} alt={tags} />
+      {largeImgShow && (
+        <Modal
+          largeImgShow={largeImgShow}
+          largeImg={largeImg}
+          tags={tags}
+          onClose={onItemClick}
+        />
+      )}
+    </li>
+  );
+};
 
 ImageGalleryItem.propTypes = {
   img: PropTypes.string.isRequired,
