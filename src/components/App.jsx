@@ -42,6 +42,7 @@ export const App = () => {
       setStatus('resolved');
       setDataLength(data.totalHits);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   const onSubmitHandler = data => {

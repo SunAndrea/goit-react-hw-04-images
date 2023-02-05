@@ -7,15 +7,17 @@ const modalRoot = document.querySelector('#modal-root');
 const Modal = ({ largeImg, tags, onClose, largeImgShow }) => {
   const [isShow, setIsShow] = useState(largeImgShow);
 
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown);
-  }, [isShow]);
-
-  const handleKeyDown = evt => {
+  function handleKeyDown(evt) {
     if (evt.code === 'Escape') {
       onClose();
     }
-  };
+  }
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    handleKeyDown();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isShow]);
 
   return createPortal(
     <div className="Overlay">
