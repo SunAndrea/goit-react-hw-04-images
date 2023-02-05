@@ -16,34 +16,27 @@ export const App = () => {
   useEffect(() => {
     setStatus('pending');
 
-    if (page !== 1) {
-      return;
-    } else if (query === '') {
+    if (query === '') {
       setStatus('resolved');
       setImages([]);
       setDataLength(null);
 
       return;
+    } else if (page === 1) {
+      fetchApi(query, page).then(data => {
+        setImages(data.hits);
+        setStatus('resolved');
+        setDataLength(data.totalHits);
+      });
+    } else if (page !== 1) {
+      fetchApi(query, page).then(data => {
+        setImages([...images, ...data.hits]);
+        setStatus('resolved');
+        setDataLength(data.totalHits);
+      });
     }
-    fetchApi(query, page).then(data => {
-      setImages(data.hits);
-      setStatus('resolved');
-      setDataLength(data.totalHits);
-    });
-  }, [query, page]);
-
-  useEffect(() => {
-    if (page === 1) {
-      return;
-    }
-    setStatus('pending');
-    fetchApi(query, page).then(data => {
-      setImages([...images, ...data.hits]);
-      setStatus('resolved');
-      setDataLength(data.totalHits);
-    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page]);
+  }, [page, query]);
 
   const onSubmitHandler = data => {
     setQuery(data);
