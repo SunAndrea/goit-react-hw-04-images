@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 const modalRoot = document.querySelector('#modal-root');
 
 const Modal = ({ largeImg, tags, onClose, largeImgShow }) => {
-  const [isShow, setIsShow] = useState(largeImgShow);
+  const [isShow] = useState(largeImgShow);
 
   function handleKeyDown(evt) {
     if (evt.code === 'Escape') {
