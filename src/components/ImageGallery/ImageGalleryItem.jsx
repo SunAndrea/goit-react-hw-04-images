@@ -9,7 +9,7 @@ const ImageGalleryItem = ({ img, tags, largeImg }) => {
   };
 
   return (
-    <li onClick={onItemClick} className="ImageGalleryItem-image">
+    <li onClick={onItemClick} className="ImageGalleryItem">
       <img src={img} alt={tags} />
       {largeImgShow && (
         <Modal

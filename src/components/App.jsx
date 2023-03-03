@@ -49,11 +49,13 @@ export const App = () => {
   };
 
   return (
-    <div>
+    <>
       <Searchbar onSubmit={onSubmitHandler}></Searchbar>
-      {status === 'pending' && <Loader></Loader>}
-      <ImageGallery images={images}></ImageGallery>
-      {images && dataLength >= 12 && <Button onClick={onLoadMore} />}
-    </div>
+      <div className="ImageGalleryWrapper">
+        {status === 'pending' && <Loader></Loader>}
+        <ImageGallery images={images}></ImageGallery>
+        {images && dataLength >= 12 && <Button onClick={onLoadMore} />}
+      </div>
+    </>
   );
 };
